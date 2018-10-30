@@ -15,18 +15,18 @@ class Aresta{
     this.dependencia = dependencia;
   }
 
-  public void imprimirAresta(){
-    System.out.println("O: "+origem+", "+" D: " + destino+", Dep: "+dependencia);
-  }
-
   public String getOrigem(){
     return origem;
   }
 
-  public void setJ(String j){
-    this.destino=j;
+  public void setDestino(String destino){
+    this.destino = destino;
   }
 
+  @Override
+  public String toString(){
+    return "O:" + origem + ", " + " D: " + destino + ", Dep:" + dependencia;
+  }
 }
 
 //Materia, Lista de Materias, Nivel
@@ -38,7 +38,7 @@ class Vertice implements Comparable<Vertice>{
   public Vertice(String materia){
     this.materia = materia;
     pendencias = new ArrayList<>();
-    this.nivel =0;
+    this.nivel = 0;
   }
 
 
@@ -46,29 +46,21 @@ class Vertice implements Comparable<Vertice>{
     pendencias.add(materia);
   }
 
-
-  public void imprimir(){
-    System.out.print("["+materia+ "]-> ");
-    for(String i : pendencias){
-      System.out.print(i+";");
-    }
-    System.out.println();
+  @Override
+  public String toString(){
+    String str = "[" + materia +"]-> ";
+    for(String s : pendencias)
+      str += s + ";";
+    str += "\n";
+    return str;
   }
 
-
-  //verifica se S é adjacente ao Vertice
-  public boolean verificarSeExiste(String s){
-      boolean resp = false;
-      for(String i : pendencias) {
-        if(i.equals(s)){
-          resp = true;
-        }
-      }
-      return false;
+  public boolean hasPendencia(String vertice){
+    return pendencias.contains(vertice);
   }
 
-  public void removerMaterias(String s){
-      pendencias.remove(s);
+  public void removerMaterias(String materia){
+      pendencias.remove(materia);
   }
 
   public String getMateria(){
@@ -87,31 +79,29 @@ class Vertice implements Comparable<Vertice>{
 
 class Grafo {
   public List<Vertice> v;
-  public List<Aresta> p = new ArrayList<>();
+  public List<Aresta> p;
 
   public List<Aresta> getPendencias(){
-    List<Aresta> nova = p;
-    return nova;
+    return p;
   }
 
   public Grafo(){
     v = new ArrayList<>();
+    p = new ArrayList<>();
   }
 
-  public void inserirGrafo(Vertice i){
-    v.add(i);
+  public void inserirGrafo(Vertice vertice){
+    v.add(vertice);
   }
 
-  public void inserirMateria(Vertice i, String materia){
-    i.inserirVertice(materia);
-  }
-
-  public void imprimir(){
-    for(Vertice i : v){
-      i.imprimir();
+  @Override
+  public String toString (){
+    String str = "";
+    for (Vertice vertice : v){
+      str += vertice + "\n";
     }
-  }//impimir
-
+    return str;
+  }
 
   public void arestas(String[] s){
     p = new ArrayList<>();
@@ -122,7 +112,7 @@ class Grafo {
         a = new Aresta(i.getMateria(), "0", 0);
         for(String k: s){
           if(j.equals(k)) {
-            a.setJ(j);
+            a.setDestino(j);
             p.add(a);
           }
         }
@@ -157,16 +147,6 @@ class Grafo {
     return resp;
   }
 
-
-
-  public boolean hasOnList(List<Vertice> e, Vertice z){
-      for(Vertice v : e){
-          if(v.materia.equals(z.materia))
-            return true;
-      }
-      return  false;
-  }
-
   public Vertice removerArco(String s){
       for(int i = 0; i < p.size(); i++){
         Aresta e = p.get(i);
@@ -190,7 +170,7 @@ class Grafo {
 
   public boolean hasTest(String[] s, String tmp){
     for(String k : s){
-      if(k != null && k.equals(tmp))
+      if(k.equals(tmp))
         return true;
     }
     return false;
@@ -224,7 +204,7 @@ class Grafo {
 
     while (!s.isEmpty()){
       Vertice v = s.remove(0);
-      if(!hasOnList(l,v)){
+      if(!l.contains(v)){
         l.add(v);
       }
 
@@ -251,7 +231,7 @@ class Grafo {
       }
     }
     for(Aresta i : p){
-      i.imprimirAresta();
+      System.out.println(i);
     }
     if(p.isEmpty()){
         Collections.sort(l);
@@ -270,7 +250,7 @@ class Grafo {
 
 }//Grafo
 
-class pendentes{
+class MateriasPendentes{
 
     public static void main(String[] args)throws Exception{
       Scanner s = new Scanner(System.in);
@@ -288,7 +268,7 @@ class pendentes{
         x = new Vertice(array[0]);
         grafo.inserirGrafo(x);
         for(int j=1; j<array.length; j++){
-          grafo.inserirMateria(x,array[j]);
+          x.inserirVertice(array[j]);
         }
         line = s.nextLine();
       }
@@ -297,9 +277,7 @@ class pendentes{
       for(int k=0; k<pendencias.length; k++) {
         pendencias[k]=s.nextLine();
       }
-      //grafo.imprimir();
       Grafo novo = grafo.retirarMateriasCursadas(pendencias);
       novo.kahn(pendencias);
-      // novo.imprimir();
     }
 }
